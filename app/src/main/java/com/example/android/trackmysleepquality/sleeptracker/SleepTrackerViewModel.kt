@@ -30,10 +30,20 @@ class SleepTrackerViewModel(
         val database: SleepDatabaseDao,
         application: Application) : AndroidViewModel(application) {
 
-    private val tonight = MutableLiveData<SleepNight>()
+    private val tonight = MutableLiveData<SleepNight?>()
     private val nights = database.getAllNights()
     val nightsString = Transformations.map(nights) {
         formatNights(it, application.resources)
+    }
+
+    val startButtonVisible = Transformations.map(tonight) {
+        it == null
+    }
+    val stopButtonVisible = Transformations.map(tonight) {
+        it != null
+    }
+    val clearButtonVisible = Transformations.map(nights) {
+        it?.isNotEmpty()
     }
 
     private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
