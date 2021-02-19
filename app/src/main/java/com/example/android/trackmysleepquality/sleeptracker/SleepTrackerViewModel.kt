@@ -31,10 +31,7 @@ class SleepTrackerViewModel(
         application: Application) : AndroidViewModel(application) {
 
     private val tonight = MutableLiveData<SleepNight?>()
-    private val nights = database.getAllNights()
-    val nightsString = Transformations.map(nights) {
-        formatNights(it, application.resources)
-    }
+    val nights = database.getAllNights()
 
     val startButtonVisible = Transformations.map(tonight) {
         it == null
