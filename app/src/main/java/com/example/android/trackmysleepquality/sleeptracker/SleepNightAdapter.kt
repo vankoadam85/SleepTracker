@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.trackmysleepquality.database.SleepNight
 import com.example.android.trackmysleepquality.databinding.ListItemSleepNightBinding
 
-class SleepNightAdapter : ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()) {
+class SleepNightAdapter(private val clickListener: (sleepId: Long) -> Unit) : ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(SleepNightDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, clickListener)
     }
 
     /**
@@ -26,8 +26,9 @@ class SleepNightAdapter : ListAdapter<SleepNight, SleepNightAdapter.ViewHolder>(
      * to the RecyclerView such as where on the screen it was last drawn during scrolling.
      */
     class ViewHolder private constructor(private val binding: ListItemSleepNightBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: SleepNight) {
+        fun bind(item: SleepNight, clickListener: (sleepId: Long) -> Unit) {
             binding.sleep = item
+            binding.root.setOnClickListener { clickListener(item.nightId) }
             binding.executePendingBindings()
         }
 
