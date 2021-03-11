@@ -55,7 +55,7 @@ class SleepTrackerFragment : Fragment() {
         val dataSource = SleepDatabase.getInstance(application).sleepDatabaseDao
         val viewModelFactory = SleepTrackerViewModelFactory(dataSource, application)
         val sleepTrackerViewModel = ViewModelProvider(this, viewModelFactory).get(SleepTrackerViewModel::class.java)
-        val sleepNightAdapter = SleepNightAdapter { Toast.makeText(context, "$it", Toast.LENGTH_LONG).show() }
+        val sleepNightAdapter = SleepNightAdapter { nightId -> sleepTrackerViewModel.onSleepNightClicked(nightId) }
 
         binding.sleepTrackerViewModel = sleepTrackerViewModel
         binding.lifecycleOwner = this
@@ -67,7 +67,7 @@ class SleepTrackerFragment : Fragment() {
                 findNavController()
                         .navigate(SleepTrackerFragmentDirections
                                 .actionSleepTrackerFragmentToSleepQualityFragment(it.nightId))
-                sleepTrackerViewModel.doneNavigating()
+                sleepTrackerViewModel.onSleepQualityNavigated()
             }
         })
 
@@ -85,6 +85,14 @@ class SleepTrackerFragment : Fragment() {
         sleepTrackerViewModel.nights.observe(viewLifecycleOwner, Observer {
             it?.let {
                 sleepNightAdapter.submitList(it)
+            }
+        })
+
+        sleepTrackerViewModel.navigateToSleepDataQuality.observe(viewLifecycleOwner, Observer {nightId ->
+            nightId?.let {
+                this.findNavController().navigate(SleepTrackerFragmentDirections
+                        .actionSleepTrackerFragmentToSleepDetailFragment(nightId))
+                sleepTrackerViewModel.onSleepDataQualityNavigated()
             }
         })
 
